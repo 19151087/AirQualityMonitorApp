@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "870584753157",
+    "firebase_url": "https://data-sensors-815db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "data-sensors-815db",
+    "storage_bucket": "data-sensors-815db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870584753157:android:8331494758b86c1060906c",
+        "android_client_info": {
+          "package_name": "com.example.new_app2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870584753157-g0col433pn3p6vg3eurv3rjjt7bi34jo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.new_app2",
+            "certificate_hash": "e8524745ddb66d479441e1e3aea597bd191905ea"
+          }
+        },
+        {
+          "client_id": "870584753157-in79gel69gvjal1h3u4mm2usoqpvvpgg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvzNRIui4RKdLbp0NsOLSfRaMjm0hglI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870584753157-in79gel69gvjal1h3u4mm2usoqpvvpgg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
