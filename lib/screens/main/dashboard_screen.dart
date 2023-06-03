@@ -5,18 +5,16 @@ import 'package:new_app2/utils/color_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:new_app2/widgets/Chart/chart_widget.dart';
 
-import 'test2.dart';
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  final String device;
+  const DashboardScreen({super.key, required this.device});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  DatabaseReference refRT =
-      FirebaseDatabase.instance.ref('dataSensor/d4:d4:da:45:89:3c/realtime');
+class _DashboardScreenState extends State<DashboardScreen> {
+  late DatabaseReference refRT;
   double temp = 0.0;
   double humid = 0.0;
   int pm2_5 = 0;
@@ -24,12 +22,22 @@ class _HomeScreenState extends State<HomeScreen> {
   var listdata = [];
   var rawdata = "";
 
+  // Define a function that will be called when the user initiates a refresh
+  Future<void> _handleRefresh() async {}
+
+  @override
+  void initState() {
+    super.initState();
+    refRT =
+        FirebaseDatabase.instance.ref('dataSensor/${widget.device}/realtime');
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Palette.blueGray,
-      drawer: const NavigationDrawerWidget(),
+      drawer: NavigationDrawerWidget(device: widget.device),
       appBar: AppBar(
         backgroundColor: Palette.blueGray,
         elevation: 0,
@@ -41,215 +49,219 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          StreamBuilder(
-            stream: refRT.onValue,
-            builder: (context, snapshot) {
-              if (snapshot.data?.snapshot.value != null) {
-                listdata = jsonparse(snapshot);
-                pm2_5 = int.parse(listdata[0]);
-                temp = double.parse(listdata[1]);
-                humid = double.parse(listdata[2]);
-                timestamp = int.parse(listdata[4]);
-                return Padding(
-                    padding: const EdgeInsets.only(
-                      top: 16.0,
-                      left: 16.0,
-                      right: 16.0,
-                    ),
-                    child: ListView(
-                      physics: const BouncingScrollPhysics(),
-                      children: [
-                        Text(
-                          'Last update: ${getFormattedDateTime(timestamp)}',
-                          style: const TextStyle(
-                            color: Palette.redAccent,
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.w400,
-                            letterSpacing: 1,
-                            fontSize: 16.0,
-                          ),
+      body: RefreshIndicator(
+        color: Palette.blueGrayDark,
+        backgroundColor: Palette.lightGray,
+        onRefresh: _handleRefresh,
+        child: StreamBuilder(
+          stream: refRT.onValue,
+          builder: (context, snapshot) {
+            if (snapshot.data?.snapshot.value != null) {
+              listdata = jsonparse(snapshot);
+              pm2_5 = int.tryParse(listdata[0]) ?? 0;
+              temp = double.tryParse(listdata[1]) ?? 0.0;
+              humid = double.tryParse(listdata[2]) ?? 0;
+              timestamp = int.tryParse(listdata[4]) ?? 0;
+              return Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16.0,
+                    left: 16.0,
+                    right: 16.0,
+                  ),
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      Text(
+                        'Last update: ${getFormattedDateTime(timestamp)}',
+                        style: const TextStyle(
+                          color: Palette.redAccent,
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 1,
+                          fontSize: 16.0,
                         ),
-                        const SizedBox(height: 16.0),
-                        Stack(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: statusColor(pm2_5).withOpacity(0.6),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
-                                              'Status',
-                                              style: TextStyle(
+                      ),
+                      const SizedBox(height: 16.0),
+                      Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: statusColor(pm2_5).withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Status',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Montserrat',
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 1,
+                                              fontSize: 24.0,
+                                            ),
+                                          ),
+                                          Text(
+                                            statusEmoji(pm2_5),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Montserrat',
+                                              letterSpacing: 1,
+                                              fontSize: 28.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Icons.info,
+                                            size: 26.0,
+                                            color: Colors.white,
+                                          ),
+                                          const SizedBox(width: 4.0),
+                                          Expanded(
+                                            child: Text(
+                                              'The Air quality is ${getStatus(pm2_5)}',
+                                              style: const TextStyle(
                                                 color: Colors.white,
                                                 fontFamily: 'Montserrat',
                                                 fontWeight: FontWeight.w500,
                                                 letterSpacing: 1,
-                                                fontSize: 24.0,
+                                                fontSize: 14.0,
                                               ),
                                             ),
-                                            Text(
-                                              statusEmoji(pm2_5),
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'Montserrat',
-                                                letterSpacing: 1,
-                                                fontSize: 28.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8.0),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(
-                                              Icons.info,
-                                              size: 26.0,
-                                              color: Colors.white,
-                                            ),
-                                            const SizedBox(width: 4.0),
-                                            Expanded(
-                                              child: Text(
-                                                'The Air quality is ${getStatus(pm2_5)}',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontFamily: 'Montserrat',
-                                                  fontWeight: FontWeight.w500,
-                                                  letterSpacing: 1,
-                                                  fontSize: 14.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(height: 16.0),
-                                const Text(
-                                  'Temperature',
-                                  style: TextStyle(
-                                    color: Palette.blueAccent,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1,
-                                    fontSize: 30.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 4.0),
-                                Text(
-                                  '${temp.toStringAsFixed(1)} °C',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1,
-                                    fontSize: 48.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 16.0),
-                                const Text(
-                                  'Humidity',
-                                  style: TextStyle(
-                                    color: Palette.blueAccent,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1,
-                                    fontSize: 30.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 4.0),
-                                Text(
-                                  '${humid.toStringAsFixed(1)} %',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1,
-                                    fontSize: 48.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 16.0),
-                                const Text(
-                                  'PM2.5',
-                                  style: TextStyle(
-                                    color: Palette.blueAccent,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1,
-                                    fontSize: 30.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 4.0),
-                                Text(
-                                  '$pm2_5 ug/m³',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'Montserrat',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1,
-                                    fontSize: 48.0,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 54.0),
-                                child: Image.asset(
-                                  'assets/images/plant_shadow.png',
-                                  height: 420,
                                 ),
                               ),
+                              const SizedBox(height: 16.0),
+                              const Text(
+                                'Temperature',
+                                style: TextStyle(
+                                  color: Palette.blueAccent,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                  fontSize: 30.0,
+                                ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              Text(
+                                '${temp.toStringAsFixed(1)} °C',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                  fontSize: 48.0,
+                                ),
+                              ),
+                              const SizedBox(height: 16.0),
+                              const Text(
+                                'Humidity',
+                                style: TextStyle(
+                                  color: Palette.blueAccent,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                  fontSize: 30.0,
+                                ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              Text(
+                                '${humid.toStringAsFixed(1)} %',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                  fontSize: 48.0,
+                                ),
+                              ),
+                              const SizedBox(height: 16.0),
+                              const Text(
+                                'PM2.5',
+                                style: TextStyle(
+                                  color: Palette.blueAccent,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                  fontSize: 30.0,
+                                ),
+                              ),
+                              const SizedBox(height: 4.0),
+                              Text(
+                                '$pm2_5 ug/m³',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1,
+                                  fontSize: 48.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 54.0),
+                              child: Image.asset(
+                                'assets/images/plant_shadow.png',
+                                height: 420,
+                              ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 24.0),
-                        SizedBox(
-                            width: screenWidth,
-                            height: screenWidth / 1.3,
-                            child: const ChartWidget(chartType: 'temperature')),
-                        const SizedBox(height: 24.0),
-                        SizedBox(
-                            width: screenWidth,
-                            height: screenWidth / 1.3,
-                            child: const ChartWidget(chartType: 'humidity')),
-                        const SizedBox(height: 24.0),
-                        SizedBox(
-                            width: screenWidth,
-                            height: screenWidth / 1.3,
-                            child: const ChartWidget(chartType: 'dust')),
-                        const SizedBox(height: 24.0),
-                      ],
-                    ));
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('${snapshot.error}'),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-        ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24.0),
+                      SizedBox(
+                          width: screenWidth,
+                          height: screenWidth / 1.3,
+                          child: ChartWidget(
+                              chartType: 'temperature', device: widget.device)),
+                      const SizedBox(height: 24.0),
+                      SizedBox(
+                          width: screenWidth,
+                          height: screenWidth / 1.3,
+                          child: ChartWidget(
+                              chartType: 'humidity', device: widget.device)),
+                      const SizedBox(height: 24.0),
+                      SizedBox(
+                          width: screenWidth,
+                          height: screenWidth / 1.3,
+                          child: ChartWidget(
+                              chartType: 'dust', device: widget.device)),
+                      const SizedBox(height: 24.0),
+                    ],
+                  ));
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('${snapshot.error}'),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+        ),
       ),
     );
   }

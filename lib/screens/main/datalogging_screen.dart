@@ -6,20 +6,17 @@ import 'package:new_app2/utils/color_utils.dart';
 import 'package:new_app2/widgets/drawer_widget.dart';
 
 class DataLogScreen extends StatefulWidget {
-  const DataLogScreen({super.key});
+  final String device;
+  const DataLogScreen({super.key, required this.device});
 
   @override
   State<DataLogScreen> createState() => _DataLogScreenState();
 }
 
 class _DataLogScreenState extends State<DataLogScreen> {
-  final ref = FirebaseDatabase.instance
-      .ref()
-      .child('dataSensor/d4:d4:da:45:89:3c/dataLog');
-  // Create a query to fetch data from firebase realtime database
-  final Query query = FirebaseDatabase.instance
-      .ref()
-      .child('dataSensor/d4:d4:da:45:89:3c/dataLog');
+  late DatabaseReference
+      ref; // Create a query to fetch data from firebase realtime database
+  late Query query;
 
   List<String> jsonParse(dynamic value) {
     // Declare local variables
@@ -49,9 +46,18 @@ class _DataLogScreenState extends State<DataLogScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    ref = FirebaseDatabase.instance
+        .ref()
+        .child('dataSensor/${widget.device}/dataLog');
+    query = ref;
+  }
+
+  @override
   Widget build(BuildContext context) {
     TextStyle cardTextStyle =
-        const TextStyle(color: Colors.white, fontSize: 16);
+        const TextStyle(color: Colors.black, fontSize: 16);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Palette.blueGray,
@@ -63,9 +69,9 @@ class _DataLogScreenState extends State<DataLogScreen> {
           ),
         ),
       ),
-      drawer: const NavigationDrawerWidget(),
+      drawer: NavigationDrawerWidget(device: widget.device),
       body: Container(
-        color: Palette.blueGray,
+        color: Palette.lightGray,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -111,16 +117,12 @@ class _DataLogScreenState extends State<DataLogScreen> {
               RealtimeDBPagination(
                 physics: const ScrollPhysics(parent: null),
                 shrinkWrap: true,
-                // Use the query to paginate data
                 query: query,
-                // Add the orderBy parameter to match the query
+                reverse: true,
                 orderBy: 'key',
-                // Build each item in the list
                 itemBuilder: (context, dataSnapshot, index) {
-                  // Get the data as a map
                   List<String> listdata = jsonParse(dataSnapshot.value);
 
-                  // Get the key and value of the data
                   double temp = double.parse(listdata[1]);
                   double humid = double.parse(listdata[2]);
                   int pm2_5 = int.parse(listdata[0]);
@@ -132,7 +134,7 @@ class _DataLogScreenState extends State<DataLogScreen> {
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
-                    color: const Color(0xff3c6382),
+                    color: Palette.lightGray,
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Stack(
@@ -223,7 +225,7 @@ class _DataLogScreenState extends State<DataLogScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 24.0),
+                              padding: const EdgeInsets.only(top: 0.0),
                               child: Container(
                                   padding: const EdgeInsets.all(0),
                                   margin:
@@ -283,7 +285,7 @@ class _DataLogScreenState extends State<DataLogScreen> {
                   );
                 },
                 // Set the limit of items per page
-                limit: 10,
+                limit: 5,
               ),
             ],
           ),

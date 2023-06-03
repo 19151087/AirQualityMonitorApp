@@ -35,4 +35,6 @@ class Palette {
 
   static const Color quinceJelly = Color(0xfff0932b);
   static const Color carminePink = Color(0xffeb4d4b);
+
+  static const Color lightGray = Color(0xffdfe6e9);
 }

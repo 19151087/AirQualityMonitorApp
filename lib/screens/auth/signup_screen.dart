@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_app2/widgets/my_button.dart';
-import 'package:new_app2/widgets/reusable_widget.dart';
+import 'package:new_app2/widgets/text_field.dart';
 
 class SignUpScreen extends StatefulWidget {
   final Function()? onTap;
@@ -64,7 +64,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/images/bg.jpg'), fit: BoxFit.cover),
+                opacity: 0.5,
+                image: AssetImage('assets/images/bg.jpg'),
+                fit: BoxFit.cover),
             color: Color.fromRGBO(14, 51, 17, 0.2),
           ),
           child: SingleChildScrollView(
@@ -74,17 +76,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 100,
                 ),
-                reusableTextField("Enter email address", Icons.mail_outlined,
-                    false, _emailTextController),
+                textField("Enter email address", Icons.mail_outlined, false,
+                    _emailTextController),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Enter Password", Icons.lock_outline, true,
+                textField("Enter Password", Icons.lock_outline, true,
                     _passwordTextController),
                 const SizedBox(
                   height: 20,
                 ),
-                reusableTextField("Confirm Password", Icons.lock_outline, true,
+                textField("Confirm Password", Icons.lock_outline, true,
                     _confirmPasswordTextController),
                 const SizedBox(
                   height: 20,

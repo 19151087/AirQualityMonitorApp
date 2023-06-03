@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:new_app2/screens/main/dashboard_screen.dart';
+import 'package:new_app2/screens/main/selectdevices_screen.dart';
 import 'auth_select.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class AuthScreen extends StatelessWidget {
             );
           } else if (userSnapshot.connectionState == ConnectionState.active) {
             if (userSnapshot.hasData) {
-              return const HomeScreen();
+              return const SelectDevices();
             } else {
               return const AuthSelection();
             }

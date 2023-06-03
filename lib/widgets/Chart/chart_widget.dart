@@ -7,7 +7,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ChartWidget extends StatefulWidget {
   final String chartType;
-  const ChartWidget({super.key, required this.chartType});
+  final String device;
+  const ChartWidget({super.key, required this.chartType, required this.device});
 
   @override
   State<ChartWidget> createState() => _ChartWidgetState();
@@ -16,11 +17,9 @@ class ChartWidget extends StatefulWidget {
 class _ChartWidgetState extends State<ChartWidget> {
   late int chartRange = 2;
   final List<ChartData> chartDataList = [];
-  final dbRef =
-      FirebaseDatabase.instance.ref('dataSensor/d4:d4:da:45:89:3c/dataLog');
-  final settingsRef = FirebaseDatabase.instance
-      .ref()
-      .child('dataSensor/d4:d4:da:45:89:3c/settings');
+
+  late DatabaseReference dbRef;
+  late DatabaseReference settingsRef;
 
   List<String> jsonParse(dynamic value) {
     // Declare local variables
@@ -58,6 +57,11 @@ class _ChartWidgetState extends State<ChartWidget> {
   @override
   void initState() {
     super.initState();
+    settingsRef = FirebaseDatabase.instance
+        .ref()
+        .child('dataSensor/${widget.device}/settings');
+    dbRef =
+        FirebaseDatabase.instance.ref('dataSensor/${widget.device}/dataLog');
     settingsRef.child('chart_range').onValue.listen((DatabaseEvent event) {
       final v = event.snapshot.value;
       if (v != null && mounted) {

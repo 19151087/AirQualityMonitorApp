@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_app2/widgets/my_button.dart';
-import 'package:new_app2/widgets/reusable_widget.dart';
+import 'package:new_app2/widgets/text_field.dart';
 import 'package:new_app2/utils/color_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -141,7 +141,9 @@ class _SignInScreenState extends State<SignInScreen> {
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/bg.jpg'), fit: BoxFit.cover),
+              opacity: 0.5,
+              image: AssetImage('assets/images/bg.jpg'),
+              fit: BoxFit.cover),
           color: Color.fromRGBO(14, 51, 17, 0.2),
         ),
         child: SingleChildScrollView(
@@ -149,8 +151,10 @@ class _SignInScreenState extends State<SignInScreen> {
             padding: EdgeInsets.fromLTRB(
                 20, MediaQuery.of(context).size.height * 0.1, 20, 0),
             child: Column(
-              children: <Widget>[
-                logoWidget("assets/images/apple-touch-icon.png"),
+              children: [
+                Opacity(
+                    opacity: 0.5,
+                    child: logoWidget("assets/images/apple-touch-icon.png")),
                 const SizedBox(height: 20),
                 Text("Air Quality Monitor",
                     style: GoogleFonts.montserrat(
@@ -161,27 +165,13 @@ class _SignInScreenState extends State<SignInScreen> {
                     style: GoogleFonts.montserrat(
                         fontSize: 15, color: hexStringToColor('#0a3d62'))),
                 const SizedBox(height: 30),
-                reusableTextField("Enter UserName", Icons.person_outline, false,
+                textField("Enter UserName", Icons.person_outline, false,
                     _emailTextController),
                 const SizedBox(height: 20),
-                reusableTextField("Enter Password", Icons.lock_outline, true,
+                textField("Enter Password", Icons.lock_outline, true,
                     _passwordTextController),
                 const SizedBox(height: 20),
                 MyButton(onTap: signIn, text: 'SIGN IN'),
-                // authButton(context, 'SIGN IN', () {
-                //   FirebaseAuth.instance
-                //       .signInWithEmailAndPassword(
-                //           email: _emailTextController.text,
-                //           password: _passwordTextController.text)
-                //       .then((value) {
-                //     Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //             builder: (context) => const HomeScreen()));
-                //   }).onError((error, stackTrace) {
-                //     print("ERROR : ${error.toString()}");
-                //   });
-                // }),
                 signUpOptions(),
               ],
             ),
@@ -190,4 +180,14 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+}
+
+Image logoWidget(String path) {
+  return Image.asset(
+    path,
+    fit: BoxFit.fitWidth,
+    width: 240,
+    height: 240,
+    color: Colors.white,
+  );
 }

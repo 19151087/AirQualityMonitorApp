@@ -1,17 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_app2/utils/color_utils.dart';
 
-Image logoWidget(String path) {
-  return Image.asset(
-    path,
-    fit: BoxFit.fitWidth,
-    width: 240,
-    height: 240,
-    color: Colors.white,
-  );
-}
-
-TextField reusableTextField(String text, IconData icon, bool isPasswordType,
+TextField textField(String text, IconData icon, bool isPasswordType,
     TextEditingController controller) {
   return TextField(
     controller: controller,

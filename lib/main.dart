@@ -1,12 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:new_app2/screens/auth/auth.dart';
-import 'package:new_app2/screens/main/test.dart';
-import 'screens/main/datalogging_screen.dart';
-import 'screens/main/settings_screen.dart';
-import 'screens/main/test2.dart';
 import 'utils/color_utils.dart';
-import 'widgets/Chart/chart_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
